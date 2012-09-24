@@ -18,7 +18,7 @@ class Connection():
     对 psycopg2 进行简单的封装，
     让 postgre 用起来像 tornado 的默认支持的 mysql 
     """
-    def __init__(self,host,database,user=None,password=None):
+    def __init__(self,host,database,user=None,password=None,autocommit=True):
         """
         host -> sql server machine address,like 127.0.0.1[:5432]
         database -> database name
@@ -27,6 +27,7 @@ class Connection():
         """
         self.host=host
         self.database=database
+        self._autocommit=autocommit
         args=dict(database=database)
         if user is None:
             args['user']='postgres' #by default
@@ -61,7 +62,7 @@ class Connection():
         """Closes the existing database connection and reopen it"""
         self.close()
         self._conn=psycopg2.connect(**self._conn_args)
-        self._conn.autocommit=True
+        self._conn.autocommit=self._autocommit
 
     def iter(self,query,*parameters):
         cursor=self._cursor()
