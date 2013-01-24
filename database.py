@@ -1,17 +1,13 @@
 import copy
 import logging
 import time
+import itertools
 
 try:
     import psycopg2
 except ImportError:
     psycopg2=None
     raise ImportError("请安装psycopg2")
-
-try:
-    from itertools import izip as zip
-except ImportError:
-    pass
 
 class Connection():
     """
@@ -79,7 +75,7 @@ class Connection():
         try:
             self._execute(cursor,query,parameters)
             column_names=[ d[0] for d in cursor.description]
-            return [Row(zip(column_names,row)) for row in cursor]
+            return [Row(itertools.izip(column_names,row)) for row in cursor]
         finally:
             cursor.close()
 
